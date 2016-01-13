@@ -38,6 +38,24 @@ ALTER TABLE phone
   OWNER TO postgres;
 
 
+CREATE TABLE address
+(
+  id bigserial NOT NULL,
+  address character varying(255),
+  person_id bigint,
+  CONSTRAINT address PRIMARY KEY (id ),
+  CONSTRAINT fk_person_id FOREIGN KEY (person_id)
+      REFERENCES person (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE address
+  OWNER TO postgres;
+
+
+
 ALTER TABLE person ADD COLUMN book_id bigint,
 ADD CONSTRAINT fk_book_id FOREIGN KEY (book_id)
 REFERENCES book (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;

@@ -12,9 +12,13 @@ import java.util.List;
  */
 public interface StorageService
 {
-    void add(String personName, String phone);
+    void add(String personName, String phone,String address);
 
     List<Person> list();
+
+    void remove(String recordNumber);
+
+    void update(String ID,String person,String phone,String address);
 
     Book defaultBook();
 
