@@ -36,13 +36,13 @@ public class CommandList extends AbstractCommand
     private void printPerson(Person person)
     {
         StringBuilder sb = new StringBuilder();
+        sb.append("ID: ").append(person.getId()).append("\n");
         sb.append("Person: ").append(person.getName()).append("\n").append("Phones: ");
         for (Phone phone : person.getPhones())
             sb.append(phone.getPhone()).append("\n");
         sb.append("Addresses: ");
         for (Address address : person.getAddresses())
             sb.append(address.getAddress()).append("\n");
-
         System.out.println(sb.toString());
     }
 

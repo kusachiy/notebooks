@@ -36,7 +36,8 @@ public class ConsoleCommandsFactory extends CommandFacroryBase
         register(CommandExit.NAME, injector.getInstance(CommandExitBuilder.class));
         register(CommandRemove.NAME, injector.getInstance(CommandRemoveBuilder.class));
         register(CommandUpdate.NAME,injector.getInstance(CommandUpdateBuilder.class));
-    }
+
+         }
 
 
 }

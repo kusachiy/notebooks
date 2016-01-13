@@ -51,6 +51,8 @@ public class HibernateStorageService implements StorageService
         return manager.createQuery("select p from model.Person p").getResultList();
     }
 
+
+
     public Book defaultBook()
     {
         List<Book> books = manager.createQuery("from model.Book").setMaxResults(1).getResultList();

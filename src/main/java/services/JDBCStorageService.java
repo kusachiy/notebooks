@@ -39,8 +39,7 @@ public class JDBCStorageService implements StorageService
     }
     @Override
     public void update(String ID,String person,String phone, String address) {
-        TransactionScript.getInstance().updatePerson(ID, person, phone, address, defaultBook());
-    }
+        TransactionScript.getInstance().updatePerson(ID, person, phone, address, defaultBook());}
 
     @Override
     public Book defaultBook()
@@ -92,18 +91,20 @@ public class JDBCStorageService implements StorageService
             try
             {
                 PreparedStatement statement = connection.prepareStatement(
-                        "select name, phone,address from book b \n" +
-                        "inner join person p on b.id = p.book_id \n" +
-                        "inner join phone ph on p.id = ph.person_id\n" +
-                        "inner join address ad on p.id = ad.person_id \n");
+                        "select name, phone,address,p.id from book b\n" +
+                                "inner join person p on b.id = p.book_id \n" +
+                                "inner join phone ph on p.id = ph.person_id\n" +
+                                "inner join address ad on p.id = ad.person_id \n");
 
                 ResultSet r_set = statement.executeQuery();
-
                 while (r_set.next())
                 {
                     Person p = new Person(r_set.getString("name"));
                     Phone ph = new Phone(p, r_set.getString("phone"));
                     Address ad = new Address(p,r_set.getString("address"));
+                    p.setId(Long.parseLong(r_set.getString("id")));
+
+
                     p.getPhones().add(ph);
                     p.getAddresses().add(ad);
                     result.add(p);
@@ -116,7 +117,6 @@ public class JDBCStorageService implements StorageService
 
             return result;
         }
-
         public void addPerson(String person, String phone,String address, Book book)
         {
             try
@@ -137,7 +137,6 @@ public class JDBCStorageService implements StorageService
 
                 addPerson.setLong(1, book.getId());
                 addPerson.setString (2, person);
-
                 addPerson.execute();
 
                 ResultSet auto_pk = addPerson.getGeneratedKeys();
@@ -170,12 +169,7 @@ public class JDBCStorageService implements StorageService
                 Long ID = Long.parseLong(personID);
                 if (book.getId() == null)
                 {
-                    PreparedStatement addBook = connection.prepareStatement("insert into book (id) values (DEFAULT)", Statement.RETURN_GENERATED_KEYS);
-                    addBook.execute();
-                    ResultSet generated_book_id = addBook.getGeneratedKeys();
-
-                    if (generated_book_id.next())
-                        book.setId(generated_book_id.getLong("id"));
+                    throw new Exception("Table 'book' not found");
                 }
                 PreparedStatement queryText = connection.prepareStatement("select name from person where book_id=? and id=?");
                 queryText.setLong(1,book.getId());
@@ -184,11 +178,10 @@ public class JDBCStorageService implements StorageService
                 ResultSet queryResult = queryText.executeQuery();
 
 
-                while (queryResult.next())
+                if (queryResult.next())
                 {
                     PreparedStatement removedPerson = connection.prepareStatement("delete from person where book_id=? and id=?");
                     PreparedStatement removedPhone = connection.prepareStatement("delete from phone where person_id =?");
-                    //PreparedStatement removedBook = connection.prepareStatement("delete from book_person where book_id =? and persons_id = ?");
                     PreparedStatement removedAdress = connection.prepareStatement("delete from address where person_id =?");
 
 
@@ -197,10 +190,6 @@ public class JDBCStorageService implements StorageService
 
                     removedAdress.setLong(1, ID);
                     removedAdress.executeUpdate();
-
-                    //removedBook.setLong(1, book.getId());
-                    //removedBook.setLong(2,ID);
-                    //removedBook.executeUpdate();
 
                     removedPerson.setLong(1,book.getId());
                     removedPerson.setLong(2,ID);
@@ -223,12 +212,7 @@ public class JDBCStorageService implements StorageService
             {
                 if (book.getId() == null)
                 {
-                    PreparedStatement addBook = connection.prepareStatement("insert into book (id) values (DEFAULT)", Statement.RETURN_GENERATED_KEYS);
-                    addBook.execute();
-                    ResultSet generated_book_id = addBook.getGeneratedKeys();
-
-                    if (generated_book_id.next())
-                        book.setId(generated_book_id.getLong("id"));
+                    throw new Exception("Table 'book' not found");
                 }
                 PreparedStatement queryText = connection.prepareStatement("select name from person where book_id=? and id=?");
                 queryText.setLong(1,book.getId());

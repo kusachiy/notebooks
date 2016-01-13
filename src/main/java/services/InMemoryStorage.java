@@ -41,6 +41,7 @@ public class InMemoryStorage implements StorageService
         return copy;
     }
 
+
     public Book defaultBook()
     {
         return book == null ? book = new Book() : book;
